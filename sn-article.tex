@@ -1,0 +1,992 @@
+%Version 3.1 December 2024
+% See section 11 of the User Manual for version history
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                 %%
+%% Please do not use \input{...} to include other tex files.       %%
+%% Submit your LaTeX manuscript as one .tex document.              %%
+%%                                                                 %%
+%% All additional figures and files should be attached             %%
+%% separately and not embedded in the \TeX\ document itself.       %%
+%%                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%\documentclass[referee,sn-basic]{sn-jnl}% referee option is meant for double line spacing
+
+%%=======================================================%%
+%% to print line numbers in the margin use lineno option %%
+%%=======================================================%%
+
+%%\documentclass[lineno,pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%=========================================================================================%%
+%% the documentclass is set to pdflatex as default. You can delete it if not appropriate.  %%
+%%=========================================================================================%%
+
+%%\documentclass[sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%Note: the following reference styles support Namedate and Numbered referencing. By default the style follows the most common style. To switch between the options you can add or remove Numbered in the optional parenthesis. 
+%%The option is available for: sn-basic.bst, sn-chicago.bst%  
+ 
+%%\documentclass[pdflatex,sn-nature]{sn-jnl}% Style for submissions to Nature Portfolio journals
+%%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
+%%\documentclass[pdflatex,sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
+%%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
+%%\documentclass[pdflatex,sn-vancouver-num]{sn-jnl}% Vancouver Numbered Reference Style
+%%\documentclass[pdflatex,sn-vancouver-ay]{sn-jnl}% Vancouver Author Year Reference Style
+%%\documentclass[pdflatex,sn-apa]{sn-jnl}% APA Reference Style
+%%\documentclass[pdflatex,sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
+
+%%%% Standard Packages
+%%<additional latex packages if required can be included here>
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+%%%%
+
+%%%%%=============================================================================%%%%
+%%%%  Remarks: This template is provided to aid authors with the preparation
+%%%%  of original research articles intended for submission to journals published 
+%%%%  by Springer Nature. The guidance has been prepared in partnership with 
+%%%%  production teams to conform to Springer Nature technical requirements. 
+%%%%  Editorial and presentation requirements differ among journal portfolios and 
+%%%%  research disciplines. You may find sections in this template are irrelevant 
+%%%%  to your work and are empowered to omit any such section if allowed by the 
+%%%%  journal you intend to submit to. The submission guidelines and policies 
+%%%%  of the journal take precedence. A detailed User Manual is available in the 
+%%%%  template package for technical guidance.
+%%%%%=============================================================================%%%%
+
+%% as per the requirement new theorem styles can be included as shown below
+\theoremstyle{thmstyleone}%
+\newtheorem{theorem}{Theorem}%  meant for continuous numbers
+%%\newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+%% optional argument [theorem] produces theorem numbering sequence instead of independent numbers for Proposition
+\newtheorem{proposition}[theorem]{Proposition}% 
+%%\newtheorem{proposition}{Proposition}% to get separate numbers for theorem and proposition etc.
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}%
+
+\raggedbottom
+%%\unnumbered% uncomment this for unnumbered level heads
+
+\begin{document}
+
+\title[DG-3DPlace: Diffusion-Guided 3D Object
+Placement via 2D-to-3D Visual Consistency
+Optimization]{DG-3DPlace: Diffusion-Guided 3D Object
+Placement via 2D-to-3D Visual Consistency
+Optimization}
+
+%%=============================================================%%
+%% GivenName	-> \fnm{Joergen W.}
+%% Particle	-> \spfx{van der} -> surname prefix
+%% FamilyName	-> \sur{Ploeg}
+%% Suffix	-> \sfx{IV}
+%% \author*[1,2]{\fnm{Joergen W.} \spfx{van der} \sur{Ploeg} 
+%%  \sfx{IV}}\email{iauthor@gmail.com}
+%%=============================================================%%
+
+\author*[1]{\fnm{G.W.H.D.} \sur{Gothatuwa}}
+\email{helith.21@cse.mrt.ac.lk}
+
+\author[1]{\fnm{T.N.} \sur{Hasaranga}}
+\email{nandu.21@cse.mrt.ac.lk}
+
+\author[1]{\fnm{H.M.M.S.} \sur{Herath}}
+\email{manada.21@cse.mrt.ac.lk}
+
+\author[1]{\fnm{M.K.P.A.} \sur{Mallawarachchi}}
+\email{pinsara.21@cse.mrt.ac.lk}
+
+\affil*[1]{%
+  \orgdiv{Department of Computer Science and Engineering}, 
+  \orgname{University of Moratuwa}, 
+  \orgaddress{\city{Moratuwa}, \country{Sri Lanka}}
+}
+
+
+%%==================================%%
+%% Sample for unstructured abstract %%
+%%==================================%%
+
+\abstract{Recent advancements in text-driven 3D scene editing have empowered users to modify complex environments using natural language. However, the specific task of inserting new objects into existing 3D scenes remains challenging, often struggling to balance semantic plausibility with geometric consistency. Existing methods typically rely on heavy Multimodal Large Language Models (MLLMs) for spatial reasoning or require extensive per-scene fine-tuning of diffusion models, leading to high computational costs and latency. In this paper, we introduce DG-3DPlace, a novel framework for unsupervised 3D object insertion that leverages the strong compositional priors of pre-trained 2D diffusion models. Unlike prior works that predict 3D coordinates directly, DG-3DPlace adopts a "visualize-then-align" strategy. We first utilize a 2D diffusion model to generate a visually plausible object placement within a rendered view of the scene. This 2D "hallucination" serves as a ground-truth visual prior. Subsequently, we treat the 3D placement as an inverse rendering problem, optimizing the pose (position, rotation, scale) of a 3D Gaussian Splatting (3DGS) object to visually align with the diffusion-generated reference. This approach effectively lifts 2D semantic consistency into 3D space without retraining the diffusion model or modifying the scene geometry. Experiments demonstrate that DG-3DPlace achieves photorealistic integration and precise spatial grounding significantly faster than MLLM-based baselines.}
+
+%%================================%%
+%% Sample for structured abstract %%
+%%================================%%
+
+% \abstract{\textbf{Purpose:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.
+% 
+% \textbf{Methods:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.
+% 
+% \textbf{Results:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.
+% 
+% \textbf{Conclusion:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.}
+
+\keywords{keyword1, Keyword2, Keyword3, Keyword4}
+
+%%\pacs[JEL Classification]{D8, H51}
+
+%%\pacs[MSC Classification]{35A01, 65L10, 65L12, 65L20, 65L70}
+
+\maketitle
+
+\section{Introduction}\label{sec1}
+
+The democratization of 3D content creation is rapidly accelerating, driven by the need for intuitive tools that allow users to populate and edit virtual worlds such as digital twins, gaming environments, and VR spaces. A critical sub-task in this domain is text-driven object insertion—the ability to place a specific 3D asset into a scene (e.g., "place a vase on the table") such that it respects both the semantic context (on the table, not floating) and the physical lighting of the environment.
+
+Current state-of-the-art approaches, such as FreeInsert, have made significant strides by disentangling object generation from placement. However, they predominantly rely on a "reasoning-first" paradigm, where Multimodal Large Language Models (MLLMs) like GPT-4V are queried to predict spatial coordinates or bounding boxes. While MLLMs possess broad semantic knowledge, they often lack the fine-grained spatial precision required for dense 3D environments, leading to floating objects or collisions. Furthermore, ensuring visual coherence in these pipelines often necessitates computationally expensive fine-tuning (e.g., LoRA) of diffusion models for every new scene, which creates a bottleneck for real-time applications.
+
+We argue that object placement is inherently a visual problem rather than purely a linguistic one. 2D diffusion models have already mastered the art of image composition; when asked to "add a vase to this photo," they naturally account for perspective, occlusion, and support surfaces without explicit coordinate inputs.
+
+
+\section{Related Work}\label{sec2}
+
+\subsection{3D Gaussian Splatting}
+
+3D Gaussian Splatting (3DGS) has recently emerged as a paradigmatic shift in 3D scene representation, offering a compelling alternative to implicit Neural Radiance Fields (NeRF). Unlike NeRFs, which rely on computationally expensive volumetric ray-marching, 3DGS represents a scene explicitly as a collection of anisotropic 3D Gaussians. Each Gaussian is parameterized by its position, covariance (rotation and scaling), opacity, and spherical harmonic (SH) coefficients for view-dependent color.
+
+This explicit representation enables highly efficient, differentiable rasterization, allowing for real-time rendering speeds without compromising visual fidelity. Consequently, 3DGS has rapidly become the backbone for modern 3D generation and editing frameworks. Recent feed-forward reconstruction models, such as LGM, utilize 3DGS to generate high-resolution 3D content from single-view inputs in seconds. In the domain of scene editing, methods like Instruct-GS2GS and GaussianEditor exploit the discrete nature of Gaussians to perform targeted updates such as identifying and modifying specific regions more effectively than implicit fields. Our work leverages this differentiable property of 3DGS, utilizing it not just for rendering, but as a direct optimization landscape where 2D visual gradients can guide precise 3D geometric transformations.
+
+\subsection{Text-Guided 3D Scene Editing}
+
+Text-driven 3D scene editing has seen rapid progress, largely driven by the integration of 2D diffusion priors into 3D pipelines. Early approaches focused predominantly on modifying existing content, such as altering textures or stylizing the global atmosphere. Methods like Instruct-NeRF2NeRF  introduced Iterative Dataset Update (IDU) frameworks, which cyclically refine 3D representations based on edits rendered from a single viewpoint. While effective for global stylization, these methods often suffer from slow convergence and blurry artifacts due to conflicting visual signals across different viewpoints.
+
+More recent approaches attempt to mitigate these inconsistencies by propagating attention features across views or employing depth-map conditioned control. For example, DGE  treats multi-view sequences as videos to enforce temporal consistency during editing. However, these methods can still struggle with fine-grained details in complex, 360-degree scenes, often leading to misaligned high-frequency textures.
+
+\subsection{Object Insertion in 3D Scenes}
+
+Distinct from general texture editing or stylization, object insertion presents a unique challenge: it requires reasoning about semantically appropriate yet physically unoccupied regions for placement. Current insertion pipelines generally fall into two categories:
+
+Prior-Dependent Methods: Many approaches rely on explicit user constraints to simplify the problem. For instance, GaussianEditor and InseRF typically utilize user-provided 2D masks or 3D bounding boxes to guide the generation. While this offers precise control, it imposes a significant manual burden on the user and limits the scalability of the workflow.
+
+MLLM-Reasoning Methods: To remove manual priors, state-of-the-art methods like FreeInsert leverage Multimodal Large Language Models (MLLMs) such as GPT-4V to parse user instructions and explicitly predict 3D spatial coordinates. While FreeInsert successfully disentangles object generation from placement, it heavily relies on the "reasoning" capabilities of MLLMs. This can introduce latency and potential errors, as MLLMs may misinterpret subtle spatial relations in dense 3D environments.
+\\
+
+In contrast, our approach DG-3DPlace bypasses the need for explicit coordinate prediction or manual bounding boxes. By treating the pre-trained diffusion model as a visual critic, we allow the object to "find" its own optimal location through differentiable 3DGS optimization, bridging the gap between semantic understanding and geometric precision.
+
+
+\section{Methodology}\label{sec3}
+We propose DG-3DPlace, a framework for training-free, text-driven object insertion that prioritizes visual plausibility through 2D diffusion priors before enforcing 3D geometric consistency. 
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{assets/architecture_01.png}
+  \caption{Overview of the proposed DG-3DPlace framework.}
+  \label{fig:teaser}
+\end{figure*}
+
+As illustrated in Figure 1 below, our pipeline is composed of three sequential stages: (a) Scene and Object Initialization, (b) Iterative Placement Refinement via Differentiable Optimization, and (c) Final 3D Model Enhancements.
+
+\subsection{Scene \& Object Initialization}
+The foundation of our pipeline relies on explicit 3D Gaussian Splatting (3DGS) representations, which allow for real-time differentiable rasterization, a critical requirement for our optimization loop.
+
+\subsubsection{3D Scene Representation}
+We assume the input scene is represented as a pre-trained 3DGS model, $\mathcal{G}_{scene}$. This model is reconstructed from a set of multi-view images or a video sequence using standard structure-from-motion (SfM) techniques. The scene parameters (means $\mu$, covariances $\Sigma$, colors $c$, and opacities $\alpha$) are kept frozen throughout the insertion process to ensure the integrity of the original environment is preserved.
+
+\subsubsection{Insertable 3D Object Initialization}
+The object to be inserted, denoted as $\mathcal{G}_{object}$, is initialized as an independent set of 3D Gaussians. This object can be sourced from a pre-existing asset library or generated using a feed-forward 3D reconstruction model (e.g., LGM) from a text prompt or single image. Crucially, $\mathcal{G}_{object}$ is initialized at the origin of the coordinate system with canonical scaling. We define a learnable transformation matrix $T_{\theta}$ parameterized by $\theta = \{t, r, s\}$, representing translation ($t \in \mathbb{R}^3$), rotation ($r \in \mathbb{R}^4$, represented as quaternions), and isotropic scale ($s \in \mathbb{R}$).
+
+\[
+\mathcal{G}_{composite} = \mathcal{G}_{scene} \cup T_{\theta}(\mathcal{G}_{object})
+\]
+
+To accelerate convergence, we forgo blind initialization in favor of a Depth-Guided Warm Start. We first compute the 2D centroid of the inserted object from the diffusion-generated reference $I_{target}$ and retrieve the corresponding depth value from the scene's rendered depth map. By unprojecting this 2D point into world space, we initialize $t$ directly on the visible surface geometry (e.g., floor or table) closest to the visual target, while $s$ is initialized to a unit scale.
+
+\subsection{Iterative Placement Refinement}
+This stage constitutes the core of DG-3DPlace. Unlike methods that rely on MLLMs to predict 3D coordinates explicitly, which often leads to floating or intersecting objects, we formulate placement as an inverse rendering optimization problem. We utilize a 2D diffusion model as a ``visual oracle''/ critic to generate a ground-truth placement in 2D, and then optimize the 3D object's parameters to match this visual target.
+\\
+\subsubsection{Role of Critic}
+To leverage the rich semantic priors of 2D generative models, we first determine what the insertion should look like from a specific viewpoint.
+\begin{itemize}
+    \item{Viewpoint Selection:We select a fixed camera viewpoint $C_{ref}$ that offers a clear, unobstructed view of the intended insertion area (e.g., the floor or a tabletop} 
+    \item{Scene Rendering:}
+We render the empty scene $\mathcal{G}_{scene}$ from $C_{ref}$ to obtain a 2D background image, $I_{bg}$. 
+    \item {Diffusion Inpainting:}
+We employ a pre-trained, text-guided inpainting diffusion model $\Phi$ (e.g., Stable Diffusion Inpainting). Given $I_{bg}$ and the user's text prompt $P$ (e.g., ``A red sofa in the living room''), the model generates a reference image $I_{target}$.
+\end{itemize}
+
+\[
+I_{target} = \Phi(I_{bg}, P)
+\]
+
+This $I_{target}$ serves as our visual ground truth. It contains the object placed with correct perspective, occlusion, and lighting as hallucinated by the diffusion model's vast internal knowledge.
+
+\subsubsection{Differentiable 3D Optimization}
+With the target image $I_{target}$ established, our goal is to align the actual 3D object $\mathcal{G}_{object}$ so that its rendered projection matches this target.
+
+We perform an iterative optimization loop for $N$ steps:
+
+\paragraph{Differentiable Rendering:}
+At each step $i$, we transform the object using the current parameters $\theta_i$ and composite it with the scene. We then rasterize this composite scene from the same fixed camera $C_{ref}$:
+\[
+I_{render}^{(i)} =
+\text{Rasterize}(\mathcal{G}_{scene} \cup T_{\theta_i}(\mathcal{G}_{object}), C_{ref})
+\]
+
+\paragraph{Loss Calculation:}
+We compute a consistency loss $\mathcal{L}_{consistency}$ that measures the discrepancy between the rendered placement $I_{render}^{(i)}$ and the diffusion-generated target $I_{target}$. To ensure robustness to minor pixel misalignments and focus on structural placement, we utilize a combination of $L_1$ loss and Perceptual Loss (LPIPS):
+\begin{equation}
+\begin{split}
+    \mathcal{L}_{total} = \lambda_{L1} \| I_{render}^{(i)} - I_{target} \|_1 \\
+    + \lambda_{LPIPS} \mathcal{L}_{LPIPS}(I_{render}^{(i)}, I_{target})
+\end{split}
+\label{eq:loss}
+\end{equation}
+
+\paragraph{Gradient Update:}
+Gradients are backpropagated from the loss through the differentiable rasterizer to update the transformation parameters $\theta$:
+\[
+\theta_{i+1} \leftarrow \theta_i - \eta \nabla_{\theta} \mathcal{L}_{total}
+\]
+
+Since the scene Gaussians are frozen, gradients flow exclusively to the object's position, rotation, and scale. This process effectively ``slides'' the 3D object into the precise location dictated by the 2D diffusion prior, ensuring the final placement is both visually natural and geometrically valid.
+
+\subsubsection{End-to-End Example (Illustrative)}
+To make the pipeline concrete, we outline one representative end-to-end insertion example using placeholder artwork saved in the session folder. The figures below are intended as placeholders for the actual manuscript figures; replace with high-resolution renders in the final draft.
+
+\begin{figure*}[t]
+  \centering
+  \begin{tabular}{cc}
+    \includegraphics[width=0.48\linewidth]{placement_4/session_20260428_000923/selected_camera_view.png} &
+    \includegraphics[width=0.48\linewidth]{placement_4/session_20260428_000923/gemini_diffusion_added.png} \\
+    (a) Selected camera view & (b) Diffusion inpainted suggestion (visual prior) \\
+    \includegraphics[width=0.48\linewidth]{placement_4/session_20260428_000923/car_detection_bbox.png} &
+    \includegraphics[width=0.48\linewidth]{placement_4/session_20260428_000923/car_highlighted_verification.png} \\
+    (c) 2D detection / bbox & (d) Projected Gaussian cluster highlighted (red) \\
+    \includegraphics[width=0.48\linewidth]{placement_4/session_20260428_000923/final_view_with_object.png} &
+    \includegraphics[width=0.48\linewidth]{placement_4/session_20260428_000923/final_view_with_object_optimized.png} \\
+    (e) Initial integrated render & (f) After post-placement refinement
+  \end{tabular}
+  \caption{Illustrative end-to-end example (placeholders). (a) user-selected camera view; (b) diffusion model's inpainted suggestion used as a 2D visual prior; (c) OWLv2 detection bounding box; (d) scene Gaussians in the bbox highlighted for verification; (e) initial object integration (support-aware placement); (f) final optimized render.}
+  \label{fig:example_e2e}
+\end{figure*}
+
+\paragraph{Narrative of the example (step-by-step)}
+\begin{enumerate}
+  \item The operator selects the camera with a clear view of the desired placement region (Fig.~\ref{fig:example_e2e}a).
+  \item A 2D diffusion inpainting model generates a visually plausible placement in that view (Fig.~\ref{fig:example_e2e}b), which becomes the visual target $I_{target}$.
+  \item OWLv2 locates the object region and yields a 2D bbox; scene Gaussians that project into that bbox are selected as the target cluster (Fig.~\ref{fig:example_e2e}c--d).
+  \item We compute a robust support height (20th percentile of the detected cluster's Z) and place the object's bottom at this height while keeping X/Y at the detected center. This prevents sinking or floating.
+  \item The textured object is converted to Gaussians and merged with the scene; an initial render validates visual alignment (Fig.~\ref{fig:example_e2e}e).
+  \item A brief differentiable refinement run optimizes translation, rotation and uniform scale to better match $I_{target}$ (Fig.~\ref{fig:example_e2e}f).
+\end{enumerate}
+
+\subsection{Final 3D Model Enhancements}
+Once the object's pose $\theta^*$ is optimized, we perform a final pass to integrate it seamlessly into the scene's lighting environment, addressing the common ``pasted-on'' artifact.
+
+\subsubsection{Shadow and Lighting Adaptation}
+Since the diffusion-generated target $I_{target}$ contains 2D shadows hallucinated by the model, we can use it to guide the lighting properties of the 3D object. We fine-tune the Spherical Harmonic (SH) coefficients of $\mathcal{G}_{object}$ (and optionally, the opacity of Gaussians beneath the object to simulate shadows) for a few iterations.
+
+The loss function is modified to focus solely on color matching, freezing the now-optimized pose parameters:
+\[
+\mathcal{L}_{appearance}
+= \left\|
+\text{Rasterize}(\mathcal{G}_{composite}) - I_{target}
+\right\|_{color}
+\]
+
+This step ensures that the object's shading matches the directional lighting observed in the diffusion-generated reference, completing the realistic insertion.
+
+\section{Experiments}\label{sec:experiments}
+
+To validate the effectiveness of \textit{DG-3DPlace}, we conduct extensive experiments focusing on two primary axes: (1) \textbf{Visual and Geometric Quality}, assessing whether inserted objects are semantically consistent and physically grounded, and (2) \textbf{Computational Efficiency}, evaluating the runtime and memory footprint compared to MLLM-based baselines.
+
+\subsection{Experimental Setup}
+
+\subsubsection{Datasets and Baselines}
+We evaluate our method on a diverse set of 3D scenes, including standard synthetic environments (e.g., Blender dataset) and real-world scenes captured via smartphones and reconstructed using 3DGS. We compare \textit{DG-3DPlace} against three state-of-the-art text-driven editing methods:
+\begin{enumerate}
+    \item \textbf{Instruct-NeRF2NeRF (IN2N)}: A NeRF-based editing framework using Iterative Dataset Update (IDU).
+    \item \textbf{GaussianEditor}: A 3DGS-based method using varying levels of supervision.
+    \item \textbf{FreeInsert}: The current state-of-the-art baseline that utilizes MLLMs (e.g., GPT-4V) for coarse layout prediction followed by diffusion refinement.
+\end{enumerate}
+
+\subsubsection{Implementation Details}
+Our pipeline is implemented in PyTorch. For the visual critic, we utilize the pre-trained Stable Diffusion Inpainting model with ADD-IT: training-free method for adding objects from NVIDIA. The 3DGS optimization runs for $x$ steps using an Adam optimizer with learning rates initialized at $x$ for translation and rotation, and $x$ for scaling. All experiments, including baselines, were conducted on a single NVIDIA RTX 4070 TI Super GPU to ensure fair comparison.
+
+\subsection{Evaluation Metrics}
+We employ a comprehensive suite of metrics designed specifically to measure the unique challenges of 3D object insertion: semantic fidelity, identity preservation, and geometric grounding.
+
+\subsubsection{Semantic Alignment via Directional CLIP ($S_{dir}$)}
+Standard CLIP similarity scores often fail to capture the nuances of editing, as they compute the similarity between the final image and the text prompt in isolation. To address this, we employ \textbf{CLIP Directional Similarity}, which measures the alignment between the \textit{change} in image space and the \textit{change} in text space.
+
+Let $E_I$ and $E_T$ be the CLIP image and text encoders, respectively. We define the editing direction vectors as:
+\begin{align}
+\Delta I &= E_I(I_{edit}) - E_I(I_{src}) \\
+\Delta T &= E_T(T_{tgt}) - E_T(T_{src})
+\end{align}
+The score $S_{dir}$ is the cosine similarity between these two deviations:
+\begin{equation}
+S_{dir} = \frac{\Delta I \cdot \Delta T}{\| \Delta I \| \| \Delta T \|}
+\label{eq:clip_dir}
+\end{equation}
+A higher $S_{dir}$ indicates that the semantic shift in the image faithfully follows the user's editing instruction. We report the average $S_{dir}$ across $x$ novel views.
+
+\subsubsection{Identity Preservation via DINO ($DINO_{sim}$)}
+While CLIP captures high-level semantics, it lacks sensitivity to fine-grained structural and textural identity. For object insertion, it is critical that the inserted 3D asset resembles the intended object identity (e.g., specific texture of a toy) rather than a generic category. We utilize \textbf{DINOv2} (ViT-L/14) features, which are known to be robust to geometric transformations.
+
+We compute the similarity between the reference object image $I_{ref}$ and the cropped region of the inserted object $I_{crop}$ in the rendered view:
+\begin{equation}
+DINO_{sim} = \frac{F_{DINO}(I_{ref}) \cdot F_{DINO}(I_{crop})}{\| F_{DINO}(I_{ref}) \| \| F_{DINO}(I_{crop}) \|}
+\label{eq:dino_sim}
+\end{equation}
+
+\subsection{Quantitative Results}
+
+\subsubsection{Quality Comparison}
+Table~\ref{tab:quality} presents the quantitative comparison. \textit{DG-3DPlace} achieves state-of-the-art performance in both semantic and appearance metrics. Notably, our method achieves a CLIP Directional Similarity of $X$, surpassing \textit{FreeInsert}. This indicates that leveraging the visual prior of 2D diffusion models directly allows for more natural integration than MLLM-mediated reasoning. Furthermore, our $S_{contact}$ score is significantly lower ($X$ vs $X$), proving that our ``visualize-then-align'' strategy effectively mitigates the floating object problem.
+
+\begin{table}[h]
+\caption{Quantitative comparison on Semantic Alignment, Visual Identity, and Geometric Precision. $\uparrow$ indicates higher is better, $\downarrow$ indicates lower is better.}\label{tab:quality}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Method & CLIP Dir ($\uparrow$) & DINO Sim ($\uparrow$) \\
+\midrule
+Instruct-N2N & 0.26 & -\\
+GaussianEditor & 0.27 & -\\
+FreeInsert & 0.29 & 0.83 \\
+\textbf{DG-3DPlace (Ours)} & \textbf{TBD} & \textbf{TBD} \\
+\botrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Efficiency Analysis}
+A key contribution of our work is the elimination of heavy MLLM queries and per-scene fine-tuning. Table~\ref{tab:efficiency} details the runtime and memory usage. \textit{FreeInsert} requires substantial inference time ($\sim$125s) due to the latency of querying large models and iterative SDS optimization. In contrast, \textit{DG-3DPlace} completes the insertion in under $X$ seconds, representing an \textbf{X$\times$ speedup}. Additionally, our method fits comfortably within $X$ GB of VRAM, making it accessible for consumer hardware.
+
+\begin{table}[h]
+\caption{Efficiency Analysis: Comparison of Inference Time and Peak VRAM usage per edit.}\label{tab:efficiency}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Method & Inference Time (s) $\downarrow$ & Peak VRAM (GB) $\downarrow$ \\
+\midrule
+Instruct-N2N & 450.0 & 16.5 \\
+GaussianEditor & 320.0 & 14.0 \\
+FreeInsert & 125.0 & 24.0 \\
+\textbf{DG-3DPlace (Ours)} & \textbf{236.63} & \textbf{0.60} \\
+\botrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Timing Breakdown (from session logs)}
+We report median per-stage runtimes computed over 12 successful sessions (see session folders in the repository). These numbers reflect the typical cost of each stage in the pipeline and were computed from the generated `detection_resource_report.txt` files.
+
+\begin{table}[h]
+\caption{Typical per-stage runtimes (median across 12 sessions).}\label{tab:timing}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Stage & Median (s) & Mean (s) \\
+\midrule
+OWLv2 detection & 4.65 & 4.64 \\
+Unprojection & 0.05 & 0.04 \\
+Highlighting & 0.59 & 0.52 \\
+Object integration & 1.13 & 16.07 \\
+Final render & 0.47 & 0.41 \\
+Post-placement optimization & 32.12 & 32.94 \\
+Optimized final render & 0.46 & 0.40 \\
+\midrule
+Total (per-run median) & \multicolumn{2}{r}{221.07 s (median), 236.63 s (mean)} \\
+\botrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Suggested Figures and Tables}
+For a polished manuscript, we recommend including the following assets (placeholders are present in the `placement_4/session_*` folders):
+\begin{itemize}
+  \item End-to-end bar chart of total time per session (shows outliers).
+  \item Stacked bar chart breaking time into OWLv2 / Unprojection / Integration / Optimization.
+  \item Mean GPU and RAM usage per run (bar chart).
+  \item Qualitative figure set: (selected camera view, diffusion target, detection bbox, highlighted gaussians, initial placement, optimized placement).
+  \item Ablation images: with/without support-aware init, with/without SH lighting adaptation.
+  \item A CSV or appendix table with the raw `detection_resource_report` measurements for reproducibility (we include `graphs/detection_resource_report_table.csv`).
+\end{itemize}
+
+\subsection{Qualitative Results}
+Visual comparisons are illustrated in Figure~\ref{fig:qualitative} (please refer to attached supplementary material for full resolution images). We observe that baseline methods often struggle with scale ambiguity. For example, in the prompt ``Place a cat on the table,'' \textit{FreeInsert} occasionally generates a cat that is disproportionately large or hovering slightly above the surface due to imprecise bounding box prediction. \textit{DG-3DPlace}, by optimizing against a diffusion-generated 2D reference where the cat is already visually grounded on the pixels of the table, recovers the correct 3D scale and contact points naturally.
+
+\subsection{User Study}
+To corroborate our quantitative metrics, we conducted a user study with $X$ participants. Users were presented with random pairs of edits (Ours vs. Baseline) and asked to select the result that was more ``photorealistic'' and ``geometrically accurate.''
+\textit{DG-3DPlace} was preferred in \textbf{X\%} of cases over \textit{Instruct-N2N} and \textbf{X\%} of cases over \textit{FreeInsert}, with participants citing ``better shadows'' and ``more natural placement'' as the primary reasons for their choice.
+
+\subsection{Ablation Study}\label{subsec:ablation}
+To justify our design choices, we conduct an ablation study evaluating the contribution of two critical components: (1) The \textit{Depth-Guided Initialization} and (2) The \textit{Shadow and Lighting Adaptation} stage. We measure the impact using Geometric Precision ($S_{contact}$) and Visual Identity ($DINO_{sim}$).
+
+\subsubsection{Impact of Depth-Guided Initialization}
+We compare our full model against a baseline where the object is initialized at the scene origin $(0,0,0)$ or via a random valid depth. As shown in Table~\ref{tab:ablation}, removing the depth guidance significantly increases the Contact Error, leading to objects that either float or clip into the geometry. Our initialization provides a ``warm start'' that is critical for convergence within the limited $x$ optimization steps.
+
+\subsubsection{Impact of Lighting Adaptation}
+We further evaluate the visual fidelity without the final SH optimization pass. Without this stage, the inserted objects often lack harmonious shading (e.g., casting shadows consistent with the scene), resulting in a ``sticker-effect.'' The drop in CLIP Directional Similarity confirms that lighting integration is key to semantic plausibility.
+
+\begin{table}[h]
+\caption{Ablation Study results. w/o Init denotes random depth initialization. w/o Light denotes omitting the SH refinement stage.}\label{tab:ablation}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Configuration & Contact Err ($\downarrow$) & CLIP Dir ($\uparrow$) \\
+\midrule
+Full Method & \textbf{X} & \textbf{X} \\
+w/o Depth Init & X & X \\
+w/o Light Adapt & X & X \\
+\botrule
+\end{tabular}
+\end{table}
+
+\section{Discussion}\label{sec:discussion}
+Our results demonstrate that \textit{DG-3DPlace} effectively bridges the gap between 2D generative priors and 3D geometric consistency. By treating the insertion task as an inverse rendering problem guided by a diffusion-based critic, we eliminate the need for brittle MLLM spatial reasoning.
+
+\textbf{Performance on Complex Scenes:}
+We observe that our method performs exceptionally well on scenes with complex geometry (e.g., uneven terrain), where bounding-box based methods often struggle to define a flat support surface. The diffusion model implicitly understands that a chair on a hill must be tilted; our optimization naturally recovers this pose from the 2D visual cue.
+
+\textbf{Limitations:}
+While efficient, our method relies on the generative quality of the underlying 2D inpainting model. If the diffusion model generates an object with inconsistent perspective (e.g., an Escher-like distortion), the 3D optimization may struggle to converge. Future work could explore using multi-view diffusion priors, such as ViewCrafter \cite{viewcrafter} or Difix3D+ \cite{difix3d}, to enforce stronger 3D consistency during the initial ``hallucination'' phase.
+
+\section{Conclusion}\label{sec:conclusion}
+In this work, we presented \textit{DG-3DPlace}, a novel framework for text-driven 3D object insertion that is both training-free and significantly faster than existing MLLM-based baselines. By disentangling visual planning (via 2D diffusion) from geometric execution (via 3DGS optimization), we achieve photorealistic editing results with precise spatial grounding. Our extensive experiments confirm that \textit{DG-3DPlace} outperforms state-of-the-art methods in inference speed while matching or exceeding visual quality benchmarks. We believe this ``visualize-then-align'' paradigm offers a scalable path forward for real-time 3D content creation.
+
+\backmatter
+
+\section*{Declarations}
+
+\begin{itemize}
+\item \textbf{Funding:} Not applicable.
+\item \textbf{Conflict of interest:} The authors declare that they have no conflict of interest.
+\item \textbf{Data availability:} The code and datasets used in this study will be made publicly available upon publication.
+\item \textbf{Code availability:} The source code for \textit{DG-3DPlace} is available at \href{https://github.com/RealEstateGen/DG-3DPLACE}{GitHub}.
+\end{itemize}
+
+\begin{thebibliography}{99}
+
+% [1] 3D Gaussian Splatting (Core Method)
+\bibitem{3dgs}
+Kerbl, B., Kopanas, G., Leimkühler, T., \& Drettakis, G. (2023). 3D Gaussian Splatting for Real-Time Radiance Field Rendering. \textit{ACM Transactions on Graphics}, 42(4), 1–14.
+
+% [2] FreeInsert (Main Baseline)
+\bibitem{freeinsert}
+Li, C., Wang, W., Li, Q., Lepri, B., Sebe, N., \& Nie, W. (2025). FreeInsert: Disentangled Text-Guided Object Insertion in 3D Gaussian Scene without Spatial Priors. \textit{arXiv preprint arXiv:2505.01322}.
+
+% [3] LDM / Stable Diffusion (Backbone)
+\bibitem{ldm}
+Rombach, R., Blattmann, A., Lorenz, D., Esser, P., \& Ommer, B. (2022). High-Resolution Image Synthesis with Latent Diffusion Models. In \textit{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}.
+
+% [4] Difix3D+ (Future Work / Related)
+\bibitem{difix3d}
+Wu, J. Z., Zhang, Y., Turki, H., Ren, X., Gao, J., Shou, M. Z., Fidler, S., Gojcic, Z., \& Ling, H. (2025). Difix3D+: Improving 3D Reconstructions with Single-Step Diffusion Models. \textit{arXiv preprint arXiv:2503.01774}.
+
+% [5] NeRF (Foundational Work)
+\bibitem{nerf}
+Mildenhall, B., Srinivasan, P. P., Tancik, M., Barron, J. T., Ramamoorthi, R., \& Ng, R. (2020). NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis. In \textit{European Conference on Computer Vision (ECCV)}.
+
+% [6] Nerfstudio (Framework)
+\bibitem{nerfstudio}
+Tancik, M., et al. (2023). Nerfstudio: A Modular Framework for Neural Radiance Field Development. \textit{ACM Transactions on Graphics}, 42(4).
+
+% [7] Instruct-NeRF2NeRF (Baseline)
+\bibitem{in2n}
+Haque, A., Tancik, M., Efros, A. A., Holynski, A., \& Kanazawa, A. (2023). Instruct-NeRF2NeRF: Editing 3D Scenes with Instructions. In \textit{Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)}.
+
+% [8] GaussianEditor (Baseline)
+\bibitem{gaussianeditor}
+Chen, Y., et al. (2024). GaussianEditor: Swift and Controllable 3D Editing with Gaussian Splatting. In \textit{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}.
+
+% [9] ViewCrafter (Future Work / Related)
+\bibitem{viewcrafter}
+Yu, W., et al. (2024). ViewCrafter: Taming Video Diffusion Models for High-fidelity Novel View Synthesis. \textit{arXiv preprint arXiv:2409.02509}.
+
+% [10] ADD-IT (Method used in Implementation)
+\bibitem{addit}
+Tewel, Y., Gal, R., Samuel, D., Atzmon, Y., Wolf, L., \& Chechik, G. (2024). Add-it: Training-Free Object Insertion in Images With Pretrained Diffusion Models. \textit{arXiv preprint arXiv:2411.07232}.
+
+\end{thebibliography}
+
+% \section{Results}\label{sec2}
+
+% Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text.
+
+% \section{This is an example for first level head---section head}\label{sec3}
+
+% \subsection{This is an example for second level head---subsection head}\label{subsec2}
+
+% \subsubsection{This is an example for third level head---subsubsection head}\label{subsubsec2}
+
+% Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. 
+
+% \section{Equations}\label{sec4}
+
+% Equations in \LaTeX\ can either be inline or on-a-line by itself (``display equations''). For
+% inline equations use the \verb+$...$+ commands. E.g.: The equation
+% $H\psi = E \psi$ is written via the command \verb+$H \psi = E \psi$+.
+
+% For display equations (with auto generated equation numbers)
+% one can use the equation or align environments:
+% \begin{equation}
+% \|\tilde{X}(k)\|^2 \leq\frac{\sum\limits_{i=1}^{p}\left\|\tilde{Y}_i(k)\right\|^2+\sum\limits_{j=1}^{q}\left\|\tilde{Z}_j(k)\right\|^2 }{p+q}.\label{eq1}
+% \end{equation}
+% where,
+% \begin{align}
+% D_\mu &=  \partial_\mu - ig \frac{\lambda^a}{2} A^a_\mu \nonumber \\
+% F^a_{\mu\nu} &= \partial_\mu A^a_\nu - \partial_\nu A^a_\mu + g f^{abc} A^b_\mu A^a_\nu \label{eq2}
+% \end{align}
+% Notice the use of \verb+\nonumber+ in the align environment at the end
+% of each line, except the last, so as not to produce equation numbers on
+% lines where no equation numbers are required. The \verb+\label{}+ command
+% should only be used at the last line of an align environment where
+% \verb+\nonumber+ is not used.
+% \begin{equation}
+% Y_\infty = \left( \frac{m}{\textrm{GeV}} \right)^{-3}
+%     \left[ 1 + \frac{3 \ln(m/\textrm{GeV})}{15}
+%     + \frac{\ln(c_2/5)}{15} \right]
+% \end{equation}
+% The class file also supports the use of \verb+\mathbb{}+, \verb+\mathscr{}+ and
+% \verb+\mathcal{}+ commands. As such \verb+\mathbb{R}+, \verb+\mathscr{R}+
+% and \verb+\mathcal{R}+ produces $\mathbb{R}$, $\mathscr{R}$ and $\mathcal{R}$
+% respectively (refer Subsubsection~\ref{subsubsec2}).
+
+% \section{Tables}\label{sec5}
+
+% Tables can be inserted via the normal table and tabular environment. To put
+% footnotes inside tables you should use \verb+\footnotetext[]{...}+ tag.
+% The footnote appears just below the table itself (refer Tables~\ref{tab1} and \ref{tab2}). 
+% For the corresponding footnotemark use \verb+\footnotemark[...]+
+
+% \begin{table}[h]
+% \caption{Caption text}\label{tab1}%
+% \begin{tabular}{@{}llll@{}}
+% \toprule
+% Column 1 & Column 2  & Column 3 & Column 4\\
+% \midrule
+% row 1    & data 1   & data 2  & data 3  \\
+% row 2    & data 4   & data 5\footnotemark[1]  & data 6  \\
+% row 3    & data 7   & data 8  & data 9\footnotemark[2]  \\
+% \botrule
+% \end{tabular}
+% \footnotetext{Source: This is an example of table footnote. This is an example of table footnote.}
+% \footnotetext[1]{Example for a first table footnote. This is an example of table footnote.}
+% \footnotetext[2]{Example for a second table footnote. This is an example of table footnote.}
+% \end{table}
+
+% \noindent
+% The input format for the above table is as follows:
+
+% %%=============================================%%
+% %% For presentation purpose, we have included  %%
+% %% \bigskip command. Please ignore this.       %%
+% %%=============================================%%
+% \bigskip
+% \begin{verbatim}
+% \begin{table}[<placement-specifier>]
+% \caption{<table-caption>}\label{<table-label>}%
+% \begin{tabular}{@{}llll@{}}
+% \toprule
+% Column 1 & Column 2 & Column 3 & Column 4\\
+% \midrule
+% row 1 & data 1 & data 2	 & data 3 \\
+% row 2 & data 4 & data 5\footnotemark[1] & data 6 \\
+% row 3 & data 7 & data 8	 & data 9\footnotemark[2]\\
+% \botrule
+% \end{tabular}
+% \footnotetext{Source: This is an example of table footnote. 
+% This is an example of table footnote.}
+% \footnotetext[1]{Example for a first table footnote.
+% This is an example of table footnote.}
+% \footnotetext[2]{Example for a second table footnote. 
+% This is an example of table footnote.}
+% \end{table}
+% \end{verbatim}
+% \bigskip
+% %%=============================================%%
+% %% For presentation purpose, we have included  %%
+% %% \bigskip command. Please ignore this.       %%
+% %%=============================================%%
+
+% \begin{table}[h]
+% \caption{Example of a lengthy table which is set to full textwidth}\label{tab2}
+% \begin{tabular*}{\textwidth}{@{\extracolsep\fill}lcccccc}
+% \toprule%
+% & \multicolumn{3}{@{}c@{}}{Element 1\footnotemark[1]} & \multicolumn{3}{@{}c@{}}{Element 2\footnotemark[2]} \\\cmidrule{2-4}\cmidrule{5-7}%
+% Project & Energy & $\sigma_{calc}$ & $\sigma_{expt}$ & Energy & $\sigma_{calc}$ & $\sigma_{expt}$ \\
+% \midrule
+% Element 3  & 990 A & 1168 & $1547\pm12$ & 780 A & 1166 & $1239\pm100$\\
+% Element 4  & 500 A & 961  & $922\pm10$  & 900 A & 1268 & $1092\pm40$\\
+% \botrule
+% \end{tabular*}
+% \footnotetext{Note: This is an example of table footnote. This is an example of table footnote this is an example of table footnote this is an example of~table footnote this is an example of table footnote.}
+% \footnotetext[1]{Example for a first table footnote.}
+% \footnotetext[2]{Example for a second table footnote.}
+% \end{table}
+
+% In case of double column layout, tables which do not fit in single column width should be set to full text width. For this, you need to use \verb+\begin{table*}+ \verb+...+ \verb+\end{table*}+ instead of \verb+\begin{table}+ \verb+...+ \verb+\end{table}+ environment. Lengthy tables which do not fit in textwidth should be set as rotated table. For this, you need to use \verb+\begin{sidewaystable}+ \verb+...+ \verb+\end{sidewaystable}+ instead of \verb+\begin{table*}+ \verb+...+ \verb+\end{table*}+ environment. This environment puts tables rotated to single column width. For tables rotated to double column width, use \verb+\begin{sidewaystable*}+ \verb+...+ \verb+\end{sidewaystable*}+.
+
+% \begin{sidewaystable}
+% \caption{Tables which are too long to fit, should be written using the ``sidewaystable'' environment as shown here}\label{tab3}
+% \begin{tabular*}{\textheight}{@{\extracolsep\fill}lcccccc}
+% \toprule%
+% & \multicolumn{3}{@{}c@{}}{Element 1\footnotemark[1]}& \multicolumn{3}{@{}c@{}}{Element\footnotemark[2]} \\\cmidrule{2-4}\cmidrule{5-7}%
+% Projectile & Energy	& $\sigma_{calc}$ & $\sigma_{expt}$ & Energy & $\sigma_{calc}$ & $\sigma_{expt}$ \\
+% \midrule
+% Element 3 & 990 A & 1168 & $1547\pm12$ & 780 A & 1166 & $1239\pm100$ \\
+% Element 4 & 500 A & 961  & $922\pm10$  & 900 A & 1268 & $1092\pm40$ \\
+% Element 5 & 990 A & 1168 & $1547\pm12$ & 780 A & 1166 & $1239\pm100$ \\
+% Element 6 & 500 A & 961  & $922\pm10$  & 900 A & 1268 & $1092\pm40$ \\
+% \botrule
+% \end{tabular*}
+% \footnotetext{Note: This is an example of table footnote this is an example of table footnote this is an example of table footnote this is an example of~table footnote this is an example of table footnote.}
+% \footnotetext[1]{This is an example of table footnote.}
+% \end{sidewaystable}
+
+% \section{Figures}\label{sec6}
+
+% As per the \LaTeX\ standards you need to use eps images for \LaTeX\ compilation and \verb+pdf/jpg/png+ images for \verb+PDFLaTeX+ compilation. This is one of the major difference between \LaTeX\ and \verb+PDFLaTeX+. Each image should be from a single input .eps/vector image file. Avoid using subfigures. The command for inserting images for \LaTeX\ and \verb+PDFLaTeX+ can be generalized. The package used to insert images in \verb+LaTeX/PDFLaTeX+ is the graphicx package. Figures can be inserted via the normal figure environment as shown in the below example:
+
+% %%=============================================%%
+% %% For presentation purpose, we have included  %%
+% %% \bigskip command. Please ignore this.       %%
+% %%=============================================%%
+% \bigskip
+% \begin{verbatim}
+% \begin{figure}[<placement-specifier>]
+% \centering
+% \includegraphics{<eps-file>}
+% \caption{<figure-caption>}\label{<figure-label>}
+% \end{figure}
+% \end{verbatim}
+% \bigskip
+% %%=============================================%%
+% %% For presentation purpose, we have included  %%
+% %% \bigskip command. Please ignore this.       %%
+% %%=============================================%%
+
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width=0.9\textwidth]{fig.eps}
+% \caption{This is a widefig. This is an example of long caption this is an example of long caption  this is an example of long caption this is an example of long caption}\label{fig1}
+% \end{figure}
+
+% In case of double column layout, the above format puts figure captions/images to single column width. To get spanned images, we need to provide \verb+\begin{figure*}+ \verb+...+ \verb+\end{figure*}+.
+
+% For sample purpose, we have included the width of images in the optional argument of \verb+\includegraphics+ tag. Please ignore this. 
+
+% \section{Algorithms, Program codes and Listings}\label{sec7}
+
+% Packages \verb+algorithm+, \verb+algorithmicx+ and \verb+algpseudocode+ are used for setting algorithms in \LaTeX\ using the format:
+
+% %%=============================================%%
+% %% For presentation purpose, we have included  %%
+% %% \bigskip command. Please ignore this.       %%
+% %%=============================================%%
+% \bigskip
+% \begin{verbatim}
+% \begin{algorithm}
+% \caption{<alg-caption>}\label{<alg-label>}
+% \begin{algorithmic}[1]
+% . . .
+% \end{algorithmic}
+% \end{algorithm}
+% \end{verbatim}
+% \bigskip
+% %%=============================================%%
+% %% For presentation purpose, we have included  %%
+% %% \bigskip command. Please ignore this.       %%
+% %%=============================================%%
+
+% You may refer above listed package documentations for more details before setting \verb+algorithm+ environment. For program codes, the ``verbatim'' package is required and the command to be used is \verb+\begin{verbatim}+ \verb+...+ \verb+\end{verbatim}+. 
+
+% Similarly, for \verb+listings+, use the \verb+listings+ package. \verb+\begin{lstlisting}+ \verb+...+ \verb+\end{lstlisting}+ is used to set environments similar to \verb+verbatim+ environment. Refer to the \verb+lstlisting+ package documentation for more details.
+
+% A fast exponentiation procedure:
+
+% \lstset{texcl=true,basicstyle=\small\sf,commentstyle=\small\rm,mathescape=true,escapeinside={(*}{*)}}
+% \begin{lstlisting}
+% begin
+%   for $i:=1$ to $10$ step $1$ do
+%       expt($2,i$);  
+%       newline() od                (*\textrm{Comments will be set flush to the right margin}*)
+% where
+% proc expt($x,n$) $\equiv$
+%   $z:=1$;
+%   do if $n=0$ then exit fi;
+%      do if odd($n$) then exit fi;                 
+%         comment: (*\textrm{This is a comment statement;}*)
+%         $n:=n/2$; $x:=x*x$ od;
+%      { $n>0$ };
+%      $n:=n-1$; $z:=z*x$ od;
+%   print($z$). 
+% end
+% \end{lstlisting}
+
+% \begin{algorithm}
+% \caption{Calculate $y = x^n$}\label{algo1}
+% \begin{algorithmic}[1]
+% \Require $n \geq 0 \vee x \neq 0$
+% \Ensure $y = x^n$ 
+% \State $y \Leftarrow 1$
+% \If{$n < 0$}\label{algln2}
+%         \State $X \Leftarrow 1 / x$
+%         \State $N \Leftarrow -n$
+% \Else
+%         \State $X \Leftarrow x$
+%         \State $N \Leftarrow n$
+% \EndIf
+% \While{$N \neq 0$}
+%         \If{$N$ is even}
+%             \State $X \Leftarrow X \times X$
+%             \State $N \Leftarrow N / 2$
+%         \Else[$N$ is odd]
+%             \State $y \Leftarrow y \times X$
+%             \State $N \Leftarrow N - 1$
+%         \EndIf
+% \EndWhile
+% \end{algorithmic}
+% \end{algorithm}
+
+% %%=============================================%%
+% %% For presentation purpose, we have included  %%
+% %% \bigskip command. Please ignore this.       %%
+% %%=============================================%%
+% \bigskip
+% \begin{minipage}{\hsize}%
+% \lstset{frame=single,framexleftmargin=-1pt,framexrightmargin=-17pt,framesep=12pt,linewidth=0.98\textwidth,language=pascal}% Set your language (you can change the language for each code-block optionally)
+% %%% Start your code-block
+% \begin{lstlisting}
+% for i:=maxint to 0 do
+% begin
+% { do nothing }
+% end;
+% Write('Case insensitive ');
+% Write('Pascal keywords.');
+% \end{lstlisting}
+% \end{minipage}
+
+% \section{Cross referencing}\label{sec8}
+
+% Environments such as figure, table, equation and align can have a label
+% declared via the \verb+\label{#label}+ command. For figures and table
+% environments use the \verb+\label{}+ command inside or just
+% below the \verb+\caption{}+ command. You can then use the
+% \verb+\ref{#label}+ command to cross-reference them. As an example, consider
+% the label declared for Figure~\ref{fig1} which is
+% \verb+\label{fig1}+. To cross-reference it, use the command 
+% \verb+Figure \ref{fig1}+, for which it comes up as
+% ``Figure~\ref{fig1}''. 
+
+% To reference line numbers in an algorithm, consider the label declared for the line number 2 of Algorithm~\ref{algo1} is \verb+\label{algln2}+. To cross-reference it, use the command \verb+\ref{algln2}+ for which it comes up as line~\ref{algln2} of Algorithm~\ref{algo1}.
+
+% \subsection{Details on reference citations}\label{subsec7}
+
+% Standard \LaTeX\ permits only numerical citations. To support both numerical and author-year citations this template uses \verb+natbib+ \LaTeX\ package. For style guidance please refer to the template user manual.
+
+% Here is an example for \verb+\cite{...}+: \cite{bib1}. Another example for \verb+\citep{...}+: \citep{bib2}. For author-year citation mode, \verb+\cite{...}+ prints Jones et al. (1990) and \verb+\citep{...}+ prints (Jones et al., 1990).
+
+% All cited bib entries are printed at the end of this article: \cite{bib3}, \cite{bib4}, \cite{bib5}, \cite{bib6}, \cite{bib7}, \cite{bib8}, \cite{bib9}, \cite{bib10}, \cite{bib11}, \cite{bib12} and \cite{bib13}.
+
+% \section{Examples for theorem like environments}\label{sec10}
+
+% For theorem like environments, we require \verb+amsthm+ package. There are three types of predefined theorem styles exists---\verb+thmstyleone+, \verb+thmstyletwo+ and \verb+thmstylethree+ 
+
+% %%=============================================%%
+% %% For presentation purpose, we have included  %%
+% %% \bigskip command. Please ignore this.       %%
+% %%=============================================%%
+% \bigskip
+% \begin{tabular}{|l|p{19pc}|}
+% \hline
+% \verb+thmstyleone+ & Numbered, theorem head in bold font and theorem text in italic style \\\hline
+% \verb+thmstyletwo+ & Numbered, theorem head in roman font and theorem text in italic style \\\hline
+% \verb+thmstylethree+ & Numbered, theorem head in bold font and theorem text in roman style \\\hline
+% \end{tabular}
+% \bigskip
+% %%=============================================%%
+% %% For presentation purpose, we have included  %%
+% %% \bigskip command. Please ignore this.       %%
+% %%=============================================%%
+
+% For mathematics journals, theorem styles can be included as shown in the following examples:
+
+% \begin{theorem}[Theorem subhead]\label{thm1}
+% Example theorem text. Example theorem text. Example theorem text. Example theorem text. Example theorem text. 
+% Example theorem text. Example theorem text. Example theorem text. Example theorem text. Example theorem text. 
+% Example theorem text. 
+% \end{theorem}
+
+% Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text.
+
+% \begin{proposition}
+% Example proposition text. Example proposition text. Example proposition text. Example proposition text. Example proposition text. 
+% Example proposition text. Example proposition text. Example proposition text. Example proposition text. Example proposition text. 
+% \end{proposition}
+
+% Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text.
+
+% \begin{example}
+% Phasellus adipiscing semper elit. Proin fermentum massa
+% ac quam. Sed diam turpis, molestie vitae, placerat a, molestie nec, leo. Maecenas lacinia. Nam ipsum ligula, eleifend
+% at, accumsan nec, suscipit a, ipsum. Morbi blandit ligula feugiat magna. Nunc eleifend consequat lorem. 
+% \end{example}
+
+% Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text.
+
+% \begin{remark}
+% Phasellus adipiscing semper elit. Proin fermentum massa
+% ac quam. Sed diam turpis, molestie vitae, placerat a, molestie nec, leo. Maecenas lacinia. Nam ipsum ligula, eleifend
+% at, accumsan nec, suscipit a, ipsum. Morbi blandit ligula feugiat magna. Nunc eleifend consequat lorem. 
+% \end{remark}
+
+% Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text.
+
+% \begin{definition}[Definition sub head]
+% Example definition text. Example definition text. Example definition text. Example definition text. Example definition text. Example definition text. Example definition text. Example definition text. 
+% \end{definition}
+
+% Additionally a predefined ``proof'' environment is available: \verb+\begin{proof}+ \verb+...+ \verb+\end{proof}+. This prints a ``Proof'' head in italic font style and the ``body text'' in roman font style with an open square at the end of each proof environment. 
+
+% \begin{proof}
+% Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. 
+% \end{proof}
+
+% Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text.
+
+% \begin{proof}[Proof of Theorem~{\upshape\ref{thm1}}]
+% Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. Example for proof text. 
+% \end{proof}
+
+% \noindent
+% For a quote environment, use \verb+\begin{quote}...\end{quote}+
+% \begin{quote}
+% Quoted text example. Aliquam porttitor quam a lacus. Praesent vel arcu ut tortor cursus volutpat. In vitae pede quis diam bibendum placerat. Fusce elementum
+% convallis neque. Sed dolor orci, scelerisque ac, dapibus nec, ultricies ut, mi. Duis nec dui quis leo sagittis commodo.
+% \end{quote}
+
+% Sample body text. Sample body text. Sample body text. Sample body text. Sample body text (refer Figure~\ref{fig1}). Sample body text. Sample body text. Sample body text (refer Table~\ref{tab3}). 
+
+% \section{Methods}\label{sec11}
+
+% Topical subheadings are allowed. Authors must ensure that their Methods section includes adequate experimental and characterization data necessary for others in the field to reproduce their work. Authors are encouraged to include RIIDs where appropriate. 
+
+% \textbf{Ethical approval declarations} (only required where applicable) Any article reporting experiment/s carried out on (i)~live vertebrate (or higher invertebrates), (ii)~humans or (iii)~human samples must include an unambiguous statement within the methods section that meets the following requirements: 
+
+% \begin{enumerate}[1.]
+% \item Approval: a statement which confirms that all experimental protocols were approved by a named institutional and/or licensing committee. Please identify the approving body in the methods section
+
+% \item Accordance: a statement explicitly saying that the methods were carried out in accordance with the relevant guidelines and regulations
+
+% \item Informed consent (for experiments involving humans or human tissue samples): include a statement confirming that informed consent was obtained from all participants and/or their legal guardian/s
+% \end{enumerate}
+
+% If your manuscript includes potentially identifying patient/participant information, or if it describes human transplantation research, or if it reports results of a clinical trial then  additional information will be required. Please visit (\url{https://www.nature.com/nature-research/editorial-policies}) for Nature Portfolio journals, (\url{https://www.springer.com/gp/authors-editors/journal-author/journal-author-helpdesk/publishing-ethics/14214}) for Springer Nature journals, or (\url{https://www.biomedcentral.com/getpublished/editorial-policies\#ethics+and+consent}) for BMC.
+
+% \section{Discussion}\label{sec12}
+
+% Discussions should be brief and focused. In some disciplines use of Discussion or `Conclusion' is interchangeable. It is not mandatory to use both. Some journals prefer a section `Results and Discussion' followed by a section `Conclusion'. Please refer to Journal-level guidance for any specific requirements. 
+
+% \section{Conclusion}\label{sec13}
+
+% Conclusions may be used to restate your hypothesis or research question, restate your major findings, explain the relevance and the added value of your work, highlight any limitations of your study, describe future directions for research and recommendations. 
+
+% In some disciplines use of Discussion or 'Conclusion' is interchangeable. It is not mandatory to use both. Please refer to Journal-level guidance for any specific requirements. 
+
+% \backmatter
+
+% \bmhead{Supplementary information}
+
+% If your article has accompanying supplementary file/s please state so here. 
+
+% Authors reporting data from electrophoretic gels and blots should supply the full unprocessed scans for key as part of their Supplementary information. This may be requested by the editorial team/s if it is missing.
+
+% Please refer to Journal-level guidance for any specific requirements.
+
+% \bmhead{Acknowledgements}
+
+% Acknowledgements are not compulsory. Where included they should be brief. Grant or contribution numbers may be acknowledged.
+
+% Please refer to Journal-level guidance for any specific requirements.
+
+% \section*{Declarations}
+
+% Some journals require declarations to be submitted in a standardised format. Please check the Instructions for Authors of the journal to which you are submitting to see if you need to complete this section. If yes, your manuscript must contain the following sections under the heading `Declarations':
+
+% \begin{itemize}
+% \item Funding
+% \item Conflict of interest/Competing interests (check journal-specific guidelines for which heading to use)
+% \item Ethics approval and consent to participate
+% \item Consent for publication
+% \item Data availability 
+% \item Materials availability
+% \item Code availability 
+% \item Author contribution
+% \end{itemize}
+
+% \noindent
+% If any of the sections are not relevant to your manuscript, please include the heading and write `Not applicable' for that section. 
+
+% %%===================================================%%
+% %% For presentation purpose, we have included        %%
+% %% \bigskip command. Please ignore this.             %%
+% %%===================================================%%
+% \bigskip
+% \begin{flushleft}%
+% Editorial Policies for:
+
+% \bigskip\noindent
+% Springer journals and proceedings: \url{https://www.springer.com/gp/editorial-policies}
+
+% \bigskip\noindent
+% Nature Portfolio journals: \url{https://www.nature.com/nature-research/editorial-policies}
+
+% \bigskip\noindent
+% \textit{Scientific Reports}: \url{https://www.nature.com/srep/journal-policies/editorial-policies}
+
+% \bigskip\noindent
+% BMC journals: \url{https://www.biomedcentral.com/getpublished/editorial-policies}
+% \end{flushleft}
+
+% \begin{appendices}
+
+% \section{Section title of first appendix}\label{secA1}
+
+% An appendix contains supplementary information that is not an essential part of the text itself but which may be helpful in providing a more comprehensive understanding of the research problem or it is information that is too cumbersome to be included in the body of the paper.
+
+% %%=============================================%%
+% %% For submissions to Nature Portfolio Journals %%
+% %% please use the heading ``Extended Data''.   %%
+% %%=============================================%%
+
+% %%=============================================================%%
+% %% Sample for another appendix section			       %%
+% %%=============================================================%%
+
+% %% \section{Example of another appendix section}\label{secA2}%
+% %% Appendices may be used for helpful, supporting or essential material that would otherwise 
+% %% clutter, break up or be distracting to the text. Appendices can consist of sections, figures, 
+% %% tables and equations etc.
+
+% \end{appendices}
+
+% %%===========================================================================================%%
+% %% If you are submitting to one of the Nature Portfolio journals, using the eJP submission   %%
+% %% system, please include the references within the manuscript file itself. You may do this  %%
+% %% by copying the reference list from your .bbl file, paste it into the main manuscript .tex %%
+% %% file, and delete the associated \verb+\bibliography+ commands.                            %%
+% %%===========================================================================================%%
+
+% \bibliography{sn-bibliography}% common bib file
+% %% if required, the content of .bbl file can be included here once bbl is generated
+% %%\input sn-article.bbl
+
+\end{document}

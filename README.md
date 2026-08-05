@@ -13,12 +13,16 @@ chmod -R 777 room/data
 
 # Extract frames at 2 FPS from your video (with GPU support for COLMAP)
 sudo docker run --rm \
-  --gpus all \
-  -v $(pwd)/room:/workspace \
+  --runtime=nvidia \
+  --ipc=host \
+  --privileged \
+  -e NVIDIA_VISIBLE_DEVICES=all \
+  -e NVIDIA_DRIVER_CAPABILITIES=all \
+  -v $(pwd):/workspace \
   nerfstudio/nerfstudio:latest \
   ns-process-data video \
-  --data /workspace/data/room_01.mp4 \
-  --output-dir /workspace/data \
+  --data /workspace/room/data/face_2.mov \
+  --output-dir /workspace/room/data \
   --num-frames-target 200
 ```
 This creates `room/data/images/` with extracted frames and runs COLMAP reconstruction.
@@ -30,26 +34,25 @@ mkdir -p room/output/my_scene
 chmod -R 777 room/output/my_scene
 
 # Train for 7000 iterations (~15 minutes on RTX 4070 Ti)
-sudo docker run --gpus all \
-  -v $(pwd)/room:/workspace \
+sudo docker run --rm \
+  --runtime=nvidia \
+  --ipc=host \
+  --privileged \
+  -e NVIDIA_VISIBLE_DEVICES=all \
+  -e NVIDIA_DRIVER_CAPABILITIES=all \
+  -v $(pwd):/workspace \
   nerfstudio/nerfstudio:latest \
   ns-train splatfacto \
-  --data /workspace/data \
-  --output-dir /workspace/output/my_scene \
-  --max-num-iterations 7000 \
-  colmap
+  --data /workspace/room/data \
+  --output-dir /workspace/room/output/my_scene \
+  --max-num-iterations 100000
 ```
 Output saved to `room/output/my_scene/data/splatfacto/[timestamp]/`
 
 ### Step 3: View the 3D Scene
 ```bash
 # Start interactive viewer at http://localhost:7007
-sudo docker run --rm -it \
-  --gpus all \
-  -v $(pwd)/room:/workspace \
-  -p 7007:7007 \
-  nerfstudio/nerfstudio:latest \
-  ns-viewer --load-config /workspace/output/my_scene/data/splatfacto/2026-01-03_223700/config.yml
+sudo docker run --rm -it --runtime=nvidia --ipc=host --privileged -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all -v $(pwd):/workspace -p 7007:7007 nerfstudio/nerfstudio:latest ns-viewer --load-config /workspace/room/output/my_scene/data/splatfacto/2026-06-17_194523/config.yml
 ```
 Open your browser to **http://localhost:7007** to interact with the 3D scene.
 
@@ -827,3 +830,145 @@ Important notes:
 3. If object is too slow to reach target mask, increase mask by `+0.1` to `+0.3`.
 4. If clipping/texture corruption appears, increase RGB and/or LPIPS.
 5. Re-run for at least 80-120 epochs in complex scenes before concluding non-convergence.
+
+flowchart LR
+    %% =========================
+    %% OPTIMIZATION PIPELINE
+    %% =========================
+
+    A[Scene Checkpoint<br/>scene_with_initial_object.ckpt]
+    B[Target Diffusion Image<br/>diffusion_target.png]
+    C[Object Mask<br/>object_mask.png]
+    D[Scout Camera<br/>selected_camera.pt]
+
+    subgraph P1[Phase 1: Input Loading & Camera Setup]
+        E[Load Checkpoint]
+        F[Load Target RGB]
+        G[Load Target Mask]
+        H[Load Scout Camera]
+        I[Update Camera Resolution]
+        J[Build View & Projection Matrices]
+    end
+
+    subgraph P2[Phase 2: Scene Split & Gaussian Preparation]
+        K[Split Scene Gaussians]
+        K1[Background Gaussians]
+        K2[Object Gaussians]
+        L[Estimate True Object Center]
+    end
+
+    subgraph P3[Phase 3: Coarse Auto-Alignment]
+        M[Generate 8 Candidate Quaternions]
+        N[For Each Candidate]
+        O[Transform Object Gaussians]
+        P[Render Object Mask Only]
+        Q[Compare with Target Mask<br/>MSE Loss]
+        R[Select Best Starting Rotation]
+    end
+
+    subgraph P4[Phase 4: Main Pose Optimization Loop]
+        S[Initialize Pose Optimizer<br/>Translation + Rotation + Uniform Scale]
+        T[Transform Object Gaussians]
+        U[Merge Background + Object Gaussians]
+        V[Render Full RGB Image]
+        W[Render Object Mask]
+        X[Compute Composite Refinement Loss]
+        X1[Masked RGB Loss]
+        X2[LPIPS Perceptual Loss]
+        X3[Mask Loss]
+        X4[Center of Mass Loss]
+        Y[Compute Pose Regularizers]
+        Y1[IoU Alignment Loss]
+        Y2[Tilt Penalty]
+        Y3[Z Drift Penalty]
+        Y4[XY Drift Penalty]
+        Z[Backpropagation]
+        Z1[Adam Update Step]
+        Z2[Normalize Quaternion]
+        Z3[Clamp Scale and Translation]
+    end
+
+    subgraph P5[Phase 5: Save Refined Scene]
+        AA[Transform Final Object Gaussians]
+        AB[Merge Refined Object Back into Scene]
+        AC[Save Optimized Checkpoint<br/>scene_refined.ckpt]
+    end
+
+    %% Input connections
+    A --> E
+    B --> F
+    C --> G
+    D --> H
+
+    %% Setup flow
+    E --> K
+    F --> I
+    G --> P
+    H --> I
+    I --> J
+    J --> K
+
+    %% Split flow
+    K --> K1
+    K --> K2
+    K2 --> L
+
+    %% Auto-align
+    L --> M
+    M --> N
+    N --> O
+    O --> P
+    P --> Q
+    Q --> R
+
+    %% Optimization loop
+    R --> S
+    S --> T
+    T --> U
+    K1 --> U
+    U --> V
+    U --> W
+    V --> X
+    W --> X
+
+    X --> X1
+    X --> X2
+    X --> X3
+    X --> X4
+    X1 --> Y
+    X2 --> Y
+    X3 --> Y
+    X4 --> Y
+
+    Y --> Y1
+    Y --> Y2
+    Y --> Y3
+    Y --> Y4
+    Y1 --> Z
+    Y2 --> Z
+    Y3 --> Z
+    Y4 --> Z
+
+    Z --> Z1
+    Z1 --> Z2
+    Z2 --> Z3
+
+    %% Loop back for iterative optimization
+    Z3 --> T
+
+    %% Final save
+    Z3 --> AA
+    AA --> AB
+    AB --> AC
+
+    %% Styling
+    classDef input fill:#2f80ed,color:#fff,stroke:#1c5fb8,stroke-width:1px;
+    classDef process fill:#6c5ce7,color:#fff,stroke:#4b3fb8,stroke-width:1px;
+    classDef loss fill:#e67e22,color:#fff,stroke:#b85a13,stroke-width:1px;
+    classDef output fill:#1abc9c,color:#fff,stroke:#12806b,stroke-width:1px;
+    classDef note fill:#f4f1de,color:#333,stroke:#c9c39a,stroke-width:1px;
+
+    class A,B,C,D input;
+    class E,F,G,H,I,J,K,K1,K2,L,M,N,O,P,Q,R,S,T,U,V,W,Z,Z1,Z2,Z3 process;
+    class X,X1,X2,X3,X4,Y,Y1,Y2,Y3,Y4 loss;
+    class AC output;

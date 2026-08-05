@@ -39,6 +39,7 @@ except Exception as e:
 
 print(">>> [Step 1] Loading Shape Model...")
 shape_pipeline = Hunyuan3DDiTFlowMatchingPipeline.from_pretrained('tencent/Hunyuan3D-2.1')
+shape_pipeline.enable_flashvdm(mc_algo='mc')
 
 print(">>> [Step 1] Generating Mesh...")
 # IMPORTANT: We use the PROCESSED image now, not the original

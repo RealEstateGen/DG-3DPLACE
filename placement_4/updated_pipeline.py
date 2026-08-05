@@ -71,7 +71,7 @@ generate_obj_from_prompt_image = _TWO_D_THREE_D_MODULE.generate_obj_from_prompt_
 generate_obj_from_cutout_image = _TWO_D_THREE_D_MODULE.generate_obj_from_cutout_image
 glb_to_gaussians, mesh2splat_ply_to_gaussians = _load_glb_to_gaussians()
 
-CKPT_PATH = "ckpt/mando.ckpt"
+CKPT_PATH = "ckpt/bench_park.ckpt"
 RENDER_W, RENDER_H = 1280, 720
 NUM_CAMERAS = 15
 FOV_DEG = 60.0

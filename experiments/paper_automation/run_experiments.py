@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-from prompts import BASELINE_PROMPT, PROMPT_SPECS, SOURCE_TEXT
+from prompts import PROMPT_SPECS, SOURCE_TEXT
 
 
 SESSION_RE = re.compile(r"session_\d{8}_\d{6}")
@@ -577,7 +577,13 @@ def _run_one(
         if os.path.isdir(p)
     }
 
-    cmd = [sys.executable, "detection_optimized.py", prompt_spec["prompt"]]
+    cmd = [
+        sys.executable,
+        "detection_optimized.py",
+        prompt_spec["prompt"],
+        "--ckpt-path",
+        prompt_spec["ckpt_path"],
+    ]
     env = os.environ.copy()
     env["GEMINI_API_KEY"] = gemini_api_key
 
@@ -946,7 +952,7 @@ def main() -> int:
         print(f"ERROR: placement dir not found: {placement_dir}")
         return 1
 
-    prompts = [BASELINE_PROMPT] + list(PROMPT_SPECS)
+    prompts = list(PROMPT_SPECS)
     if args.max_prompts > 0:
         prompts = prompts[: args.max_prompts]
 

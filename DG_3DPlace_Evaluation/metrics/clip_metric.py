@@ -67,3 +67,45 @@ def clip_directional_similarity_normalized(path_initial, path_final, path_diffus
     similarity = F.cosine_similarity(dir_render, dir_diffusion)
     
     return similarity.item()
+
+
+def clip_directional_similarity_standard(path_initial, path_final, text_source, text_target):
+    """
+    Standard CLIP Text-Image Directional Similarity.
+
+    Matches the evaluation used by InstructPix2Pix / FreeInsert / GaussianEditor:
+    S_dir = cos( normalize(emb_img_final - emb_img_initial), normalize(emb_txt_final - emb_txt_initial) )
+
+    Args:
+        path_initial: path to initial image
+        path_final: path to final image (our result)
+        text_source: source text prompt (often empty or generic "A photo of a scene")
+        text_target: target text prompt (the edit instruction)
+
+    Returns:
+        float similarity
+    """
+    # Image embeddings (L2-normalized by get_clip_embedding)
+    emb_img_initial = get_clip_embedding(path_initial)
+    emb_img_final = get_clip_embedding(path_final)
+
+    # Text embeddings: import helper from clip_text_metric (it already normalizes)
+    try:
+        from DG_3DPlace_Evaluation.metrics.clip_text_metric import get_clip_text_embedding
+    except Exception:
+        # fallback: raise clear error
+        raise ImportError("Unable to import get_clip_text_embedding from clip_text_metric")
+
+    emb_txt_initial = get_clip_text_embedding(text_source)
+    emb_txt_final = get_clip_text_embedding(text_target)
+
+    # Direction vectors
+    dir_image = emb_img_final - emb_img_initial
+    dir_text = emb_txt_final - emb_txt_initial
+
+    # Normalize directions
+    dir_image = F.normalize(dir_image, p=2, dim=-1)
+    dir_text = F.normalize(dir_text, p=2, dim=-1)
+
+    similarity = F.cosine_similarity(dir_image, dir_text)
+    return similarity.item()

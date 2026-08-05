@@ -1,0 +1,95 @@
+# Default Configuration for Shadow and Lighting Enhancement
+
+# Lighting Harmonization
+LIGHTING:
+  # Brightness adjustment
+  brightness:
+    enabled: true
+    intensity_factor: 0.8  # How much to blend brightness (0-1)
+  
+  # Color temperature matching
+  color_temperature:
+    enabled: true
+    intensity_factor: 0.7
+  
+  # Ambient occlusion
+  ambient_occlusion:
+    enabled: true
+    shadow_intensity: 0.3
+
+# Shadow Generation
+SHADOW:
+  # Contact shadow (ground shadows)
+  contact_shadow:
+    enabled: true
+    softness: 3.0
+    intensity: 0.4
+    object_height: 0.5
+  
+  # Cast shadow
+  cast_shadow:
+    enabled: true
+    max_distance: 2.0
+    softness: 2.0
+  
+  # Shadow color (RGB)
+  shadow_color: [0.0, 0.0, 0.0]
+  shadow_intensity: 0.5
+
+# Material Properties
+MATERIAL:
+  # Analyze and match materials
+  analysis_enabled: true
+  
+  # Roughness adjustment
+  roughness_adjustment: 0.1
+  
+  # Specularity adjustment
+  specularity_adjustment: 0.05
+
+# Depth-based Blending
+BLENDING:
+  # Type: 'adaptive', 'feather', 'bilateral'
+  blend_type: 'adaptive'
+  
+  # Transition softness
+  transition_softness: 2.0
+  transition_width: 20
+  
+  # Blend hardness (higher = sharper transitions)
+  blend_hardness: 1.0
+
+# Post-processing
+POST_PROCESSING:
+  # Bilateral filtering for edge preservation
+  bilateral_filter:
+    enabled: false
+    diameter: 9
+    sigma_color: 75
+    sigma_space: 75
+  
+  # Edge enhancement
+  edge_enhancement: 0.0
+  
+  # Contrast adjustment
+  contrast_adjustment: 1.0
+
+# Rendering Parameters
+RENDERING:
+  # Resolution
+  render_width: 1280
+  render_height: 720
+  
+  # Device
+  device: 'cuda'  # 'cuda' or 'cpu'
+
+# Output Settings
+OUTPUT:
+  # Format
+  format: 'png'  # 'png', 'jpg', 'exr'
+  
+  # Quality (for jpg)
+  quality: 95
+  
+  # Save intermediate results
+  save_intermediates: true
